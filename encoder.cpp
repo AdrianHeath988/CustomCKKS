@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <stdexcept>
+#include <algorithm>
 
 Encoder::Encoder(int M){
     this->M = M;
@@ -34,6 +35,15 @@ void Encoder::printMatrix(std::vector<std::vector<std::complex<double>>> matrix)
         std::cout << std::endl;
     }
 }
+std::vector<std::complex<double>> Encoder::decode(std::vector<std::complex<double>> coeffs){
+    
+}
+
+
+std::vector<std::complex<double>> Encoder::encode(std::vector<std::complex<double>> input_vector){
+    
+}
+
 
 /**
  * Decodes by evaluating polynomial on roots of unity
@@ -153,6 +163,13 @@ std::vector<std::complex<double>> Encoder::dotProduct(std::vector<std::vector<st
 
     return result;
 }
+std::complex<double> Encoder::vectorDot(std::vector<std::complex<double>> vec1, std::vector<std::complex<double>> vec2){
+    std::complex<double> result = {0.0, 0.0};
+    for (size_t i = 0; i < vec1.size(); ++i) {
+        result += vec1[i] * std::conj(vec2[i]);
+    }
+    return result;
+}
 
 std::complex<double> Encoder::evaluatePolynomial(std::vector<std::complex<double>> coeffs, std::complex<double> x) {
 
@@ -169,3 +186,72 @@ std::complex<double> Encoder::evaluatePolynomial(std::vector<std::complex<double
 
     return result;
 }
+/**
+ * Take vector in Canonical Subspace (H) and output vector in C^(N/2)
+ * Key is that Canonical Subspace is defined as 2nd half elements being complex conjugates of first half
+ * therefore, we can just split in half 
+ */
+std::vector<std::complex<double>> Encoder::pi_function(std::vector<std::complex<double>> input){
+    std::vector<std::complex<double>> toReturn (input.begin(), input.begin() + N/2);
+    std::cout << "----- Computed Pi Function -----" << std::endl;
+    this->printVector(toReturn);
+    return toReturn;
+}
+/**
+ * Doubnles vector side, adding complex conjugate in the 2nd half
+ */
+std::vector<std::complex<double>> Encoder::pi_inverse(std::vector<std::complex<double>> input){
+    int len = input.size();
+    for(int i=0;i<len;i++){
+        std::complex<double> newVal = std::conj(input[i]);
+        input.push_back(newVal);
+    }
+    std::cout << "----- Computed Inverse Pi Function -----" << std::endl;
+    this->printVector(input);
+    return input;
+}
+/**
+ * Rounds coordinates randomly to (x) or (x) - 1, with probablility [1-x, x] -> [x, x-1]
+ * Ex. if value is 0.2, theres a 80% chance it resolves to .2, and a 20% chance it resolves to -.8
+ */
+std::vector<std::complex<double>> Encoder::coordinate_wise_random_rounding(std::vector<std::complex<double>> input){
+    
+}
+/**
+ * Projects a vector on the lattice using coordinate-wise random rounding
+ */
+std::vector<std::complex<double>> Encoder::sigma_R_discretization(std::vector<std::complex<double>> input){
+    
+}
+/**
+ * Computes the coordinates of a vector in the new basis
+ */
+std::vector<std::complex<double>> Encoder::compute_basis_coordinates(std::vector<std::complex<double>> input){
+    std::vector<std::vector<std::complex<double>>> vandermonde_matrix = this->compute_vandermonde();
+    std::vector<std::complex<double>> toReturn;
+    for(int i=0;i<vandermonde_matrix.size();i++){   
+        //compute vdot(intput, ith column)/vdot(ith column, ith column)
+        std::vector<std::complex<double>> ith_column;
+        for(int j=0;j<vandermonde_matrix.size();j++){
+            ith_column.push_back(vandermonde_matrix[i][j]);
+        }
+        std::cout << "----- Computed ith column -----" << std::endl;
+        this->printVector(ith_column);
+        std::complex<double> quotient = this->vectorDot(input, ith_column);
+        std::complex<double> denominator = this->vectorDot(ith_column, ith_column);
+        std::complex<double> toAdd = quotient/denominator;
+        toReturn.push_back(toAdd);
+    }
+    std::cout << "----- Computed basis coordinates -----" << std::endl;
+    this->printVector(toReturn);
+}
+/**
+ * Returns coordinate - floor(coordinate) for each
+ */
+std::vector<std::complex<double>> Encoder::round_coordinates(std::vector<std::complex<double>> input){
+    std::vector<std::complex<double>> toReturn;
+    for(int i=0;i<input.size();i++){
+        toReturn.push_back(floor(input[i]))
+    }
+}
+
