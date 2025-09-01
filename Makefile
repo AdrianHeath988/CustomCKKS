@@ -6,6 +6,7 @@ CXXFLAGS = -Wall -g -MMD -MP
 # Source files
 SRCS = main.cpp \
        encoder.cpp
+	   encryptor.cpp
 
 # Object files (derived from source files)
 OBJS = $(SRCS:.cpp=.o)
