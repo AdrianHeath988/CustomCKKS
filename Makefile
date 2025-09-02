@@ -1,11 +1,10 @@
-# Compiler and flags
 CXX = g++
 # Added -MMD and -MP for automatic dependency generation
 CXXFLAGS = -Wall -g -MMD -MP
 
 # Source files
 SRCS = main.cpp \
-       encoder.cpp
+       encoder.cpp \
 	   encryptor.cpp
 
 # Object files (derived from source files)
